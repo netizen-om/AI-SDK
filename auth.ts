@@ -93,7 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             session.user.id = token.sub
         }
 
-        if(token.sib && session.user) {
+        if(token.sub && session.user) {
             session.user.role = token.role
         }
 

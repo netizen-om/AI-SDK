@@ -41,5 +41,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.(?!svg$)[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next|api).*)", "/", "/(api|trpc)(.*)"],
 };

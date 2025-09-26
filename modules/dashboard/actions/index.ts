@@ -14,8 +14,17 @@ export const getAllPlaygoundForUser = async () => {
       },
       include: {
         user: true,
+        StarMark : {
+          where : {
+            userId : user?.id
+          },
+          select : {
+            isMarked : true,
+          }
+        }
       },
     });
+    
 
     return playgound;
   } catch (error) {
@@ -110,3 +119,48 @@ export const duplicateProjectById = async(id : string) => {
     }
 }
 
+export const toggleStarMarked = async(playgoundId : string, isChecked : boolean) => {
+  const user = await currentUser();
+  const userId = user?.id;
+
+  if(!userId) {
+    throw new Error("User Id is required")
+  }
+
+  try {
+    if(isChecked) {
+
+      await db.starMark.create({
+        data : {
+          userId : userId,
+          playgroundId : playgoundId,
+          isMarked : isChecked
+        }
+      })
+
+    } else {
+      await db.starMark.delete({
+        where : {
+          userId_playgroundId : {
+            userId,
+            playgroundId :playgoundId
+          }
+        }
+      })
+    }
+
+    revalidatePath("./dashboard");
+
+    return {
+      success : true,
+      isMarked : isChecked
+    }
+  } catch (error) {
+    console.error("Error updating starmark", error);
+    
+    return {
+      success : false,
+      error : "Failed to update"
+    }    
+  }
+}

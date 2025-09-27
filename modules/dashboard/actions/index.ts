@@ -25,7 +25,6 @@ export const getAllPlaygoundForUser = async () => {
       },
     });
     
-
     return playgound;
   } catch (error) {
     console.log("ERROR GETTING USER PLAYGOUND DETAILS");

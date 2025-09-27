@@ -79,9 +79,6 @@ export default function ProjectTable({
   onMarkasFavorite,
 }: ProjectTableProps) {
 
-  console.log(projects);
-  
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -160,11 +157,11 @@ export default function ProjectTable({
   };
 
   const copyProjectUrl = (projectId: string) => {
-    const url = `${window.location.origin}/playgound/${projectId}`
+    const url = `${window.location.origin}/playgound/${projectId}`;
 
     navigator.clipboard.writeText(url);
 
-    toast.success("Project URL copied to clipboard")
+    toast.success("Project URL copied to clipboard");
   };
 
   return (
@@ -233,7 +230,12 @@ export default function ProjectTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem asChild>
-                        <MarkedToggleButton markedForRevision={project.Starmark[0]?.isMarked} id={project.id} />
+                        <MarkedToggleButton
+                          markedForRevision={
+                            project?.StarMark?.[0]?.isMarked
+                          }
+                          id={project.id}
+                        />
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link

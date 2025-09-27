@@ -2,6 +2,7 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { useParams } from "next/navigation";
 import React from "react";

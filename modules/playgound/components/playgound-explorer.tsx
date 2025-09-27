@@ -46,20 +46,7 @@ import NewFolderDialog from "./dialogs/new-folder-dialog";
 import NewFileDialog from "./dialogs/new-file-dialog";
 import RenameFileDialog from "./dialogs/rename-file-dialog";
 import { DeleteDialog } from "./dialogs/delete-dialog";
-
-interface TemplateFile {
-  filename: string;
-  fileExtension: string;
-  content: string;
-}
-
-
-interface TemplateFolder {
-  folderName: string;
-  items: (TemplateFile | TemplateFolder)[];
-}
-
-type TemplateItem = TemplateFile | TemplateFolder;
+import { TemplateFile, TemplateFolder, TemplateItem } from "../lib/path-to-json";
 
 interface TemplateFileTreeProps {
   data: TemplateItem;
@@ -257,7 +244,7 @@ function TemplateNode({
 
   if (!isFolder) {
     const file = item as TemplateFile;
-    const fileName = '';
+    const fileName = `${file.filename}.${file.fileExtension}`;
 
     const isSelected =
       selectedFile &&

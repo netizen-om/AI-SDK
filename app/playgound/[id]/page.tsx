@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import PlaygoundEditor from "@/modules/playgound/components/playgound-editor";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
@@ -200,7 +202,16 @@ const MainPlaygoundPage = () => {
                 </div>
 
                 <div className="flex-1">
-                  { activeFile?.content }
+                  <ResizablePanelGroup direction="horizontal" className="h-full">
+                      <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
+                          <PlaygoundEditor 
+                            activeFile={activeFile}
+                            content={activeFile?.content || ""}
+                            onContentChange={() => {}}
+                            
+                          />
+                      </ResizablePanel>
+                  </ResizablePanelGroup>
                 </div>
 
               </div>

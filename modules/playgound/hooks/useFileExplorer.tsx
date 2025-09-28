@@ -8,7 +8,7 @@ import { generateFileId } from "../lib/indes";
 
 interface OpenFile extends TemplateFile {
   id: string;
-  gasUnsavedChanges: boolean;
+  hasUnsavedChanges: boolean;
   content: string;
   originalContent: string;
 }
@@ -62,7 +62,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
     const newOpenFile: OpenFile = {
       ...file,
       id: fileId,
-      gasUnsavedChanges: false,
+      hasUnsavedChanges: false,
       content: file.content || "",
       originalContent: file.content || "",
     };

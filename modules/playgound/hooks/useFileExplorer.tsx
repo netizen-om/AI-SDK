@@ -74,6 +74,31 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
     }));
   },
 
-  
+  closeFile: (fileId) => {
+    const { openFiles, activeFileId } = get();
 
+    // Used to move to next file in editor when current working file is closed
+    const newFiles = openFiles.filter((f) => f.id !== fileId);
+
+    let newActiveFileId = activeFileId;
+    let newEditorContent = get().editorContent;
+
+    if (activeFileId === fileId) {
+      if (newFiles.length > 0) {
+        // Switch to the last file in the list
+        const lastFile = newFiles[newFiles.length - 1];
+        newActiveFileId = lastFile.id;
+        newEditorContent = lastFile.content;
+      } else {
+        newActiveFileId = null;
+        newEditorContent = "";
+      }
+    }
+
+    set({
+        openFiles : newFiles,
+        activeFileId : activeFileId,
+        editorContent : newEditorContent,
+    })
+  },
 }));

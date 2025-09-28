@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -19,7 +20,7 @@ import { TemplateFileTree } from "@/modules/playgound/components/playgound-explo
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { TemplateFile } from "@/modules/playgound/lib/path-to-json";
-import { Bot, icons, Save, SaveAll, Settings } from "lucide-react";
+import { Bot, FileText, icons, Save, SaveAll, Settings, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -39,6 +40,7 @@ const MainPlaygoundPage = () => {
     setOpenFiles,
     closeAllFiles,
     openFile,
+    closeFile,
     openFiles,
   } = useFileExplorer();
 
@@ -144,6 +146,76 @@ const MainPlaygoundPage = () => {
               </div>
             </div>
           </header>
+
+          <div className="h-[calc(100vh-4rem)]">
+            {openFiles.length > 0 ? (
+              <div className="h-full flex flex-col">
+                <div className="border-b bg-muted/30">
+                  <Tabs
+                    value={activeFileId || ""}
+                    onValueChange={setActiveFileId}
+                  >
+                    <div className="flex items-center justify-between px-4 py-2">
+                      <TabsList className="h-8 bg-transparent p-0">
+                        {openFiles.map((file) => (
+                          <TabsTrigger
+                            key={file.id}
+                            value={file.id}
+                            className="relative h-8 px-3 data-[state=active]:bg-background data-[state=active]:shadow-sm group"
+                          >
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-3 w-3" />
+                              <span>
+                                {file.filename}.{file.fileExtension}
+                              </span>
+                              {file.hasUnsavedChanges && (
+                                <span className="h-2 w-2 rounded-full bg-orange-500" />
+                              )}
+                              <span
+                                className="ml-2 h-4 w-4 hover:bg-destructive hover:text-destructive-foreground rounded-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  closeFile(file.id);
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </span>
+                            </div>
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+
+                      {openFiles.length > 1 && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={closeAllFiles}
+                          className="h-6 px-2 text-xs"
+                        >
+                          Close All
+                        </Button>
+                      )}
+                    </div>
+                  </Tabs>
+                </div>
+
+                <div className="flex-1">
+                  { activeFile?.content }
+                </div>
+
+              </div>
+            ) : (
+              <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-4">
+                <FileText className="h-16 w-16 text-gray-300" />
+                <div className="text-center">
+                  <p className="text-lg font-medium">No files open</p>
+                  <p className="text-sm text-grey-500">
+                    Select file from sidebar to start editing
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </SidebarInset>
       </>
     </TooltipProvider>

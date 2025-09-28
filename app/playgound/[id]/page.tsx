@@ -22,7 +22,7 @@ const MainPlaygoundPage = () => {
     <TooltipProvider>
       <>
         <TemplateFileTree
-          data={templateData}
+          data={templateData!}
           onFileSelect={() => {}}
           selectedFile={activeFile}
           title="File Explorer"

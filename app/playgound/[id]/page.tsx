@@ -25,12 +25,15 @@ import PlaygoundEditor from "@/modules/playgound/components/playgound-editor";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
-import { TemplateFile } from "@/modules/playgound/lib/path-to-json";
+import {
+  TemplateFile,
+  TemplateFolder,
+} from "@/modules/playgound/lib/path-to-json";
 import WebContainerPreview from "@/modules/webcontainers/components/webcontainer-preview";
 import { useWebContainer } from "@/modules/webcontainers/hooks/useWebContainer";
 import { Bot, FileText, icons, Save, SaveAll, Settings, X } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const MainPlaygoundPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,10 +53,24 @@ const MainPlaygoundPage = () => {
     openFile,
     closeFile,
     openFiles,
+    handleAddFile,
+    handleAddFolder,
+    handleDeleteFile,
+    handleDeleteFolder,
+    handleRenameFile,
+    handleRenameFolder,
+    updateFileContent,
   } = useFileExplorer();
 
-  const { serverUrl, isLoading:containerLoading, error:containerError, instance, writeFileSync, destroy } =
-      //@ts-ignore
+  const {
+    serverUrl,
+    isLoading: containerLoading,
+    error: containerError,
+    instance,
+    writeFileSync,
+    destroy,
+  } =
+    //@ts-ignore
     useWebContainer({ templateData });
 
   useEffect(() => {
@@ -65,6 +82,71 @@ const MainPlaygoundPage = () => {
       setTemplateData(templateData);
     }
   }, [templateData, setTemplateData, openFiles.length]);
+
+  // Create wrapper functions that pass saveTemplateData
+  const wrappedHandleAddFile = useCallback(
+    (newFile: TemplateFile, parentPath: string) => {
+      return handleAddFile(
+        newFile,
+        parentPath,
+        writeFileSync!,
+        instance,
+        saveTemplateData
+      );
+    },
+    [handleAddFile, writeFileSync, instance, saveTemplateData]
+  );
+
+  const wrappedHandleAddFolder = useCallback(
+    (newFolder: TemplateFolder, parentPath: string) => {
+      return handleAddFolder(newFolder, parentPath, instance, saveTemplateData);
+    },
+    [handleAddFolder, instance, saveTemplateData]
+  );
+
+  const wrappedHandleDeleteFile = useCallback(
+    (file: TemplateFile, parentPath: string) => {
+      return handleDeleteFile(file, parentPath, saveTemplateData);
+    },
+    [handleDeleteFile, saveTemplateData]
+  );
+
+  const wrappedHandleDeleteFolder = useCallback(
+    (folder: TemplateFolder, parentPath: string) => {
+      return handleDeleteFolder(folder, parentPath, saveTemplateData);
+    },
+    [handleDeleteFolder, saveTemplateData]
+  );
+
+  const wrappedHandleRenameFile = useCallback(
+    (
+      file: TemplateFile,
+      newFilename: string,
+      newExtension: string,
+      parentPath: string
+    ) => {
+      return handleRenameFile(
+        file,
+        newFilename,
+        newExtension,
+        parentPath,
+        saveTemplateData
+      );
+    },
+    [handleRenameFile, saveTemplateData]
+  );
+
+  const wrappedHandleRenameFolder = useCallback(
+    (folder: TemplateFolder, newFolderName: string, parentPath: string) => {
+      return handleRenameFolder(
+        folder,
+        newFolderName,
+        parentPath,
+        saveTemplateData
+      );
+    },
+    [handleRenameFolder, saveTemplateData]
+  );
 
   const activeFile = openFiles.find((file) => file.id === activeFileId);
   const hasUnSavedChanges = openFiles.some((file) => file.hasUnsavedChanges);
@@ -81,12 +163,12 @@ const MainPlaygoundPage = () => {
           onFileSelect={handleFileSelect}
           selectedFile={activeFile}
           title="File Explorer"
-          onAddFile={() => {}}
-          onAddFolder={() => {}}
-          onDeleteFile={() => {}}
-          onDeleteFolder={() => {}}
-          onRenameFile={() => {}}
-          onRenameFolder={() => {}}
+          onAddFile={wrappedHandleAddFile}
+          onAddFolder={wrappedHandleAddFolder}
+          onDeleteFile={wrappedHandleDeleteFile}
+          onDeleteFolder={wrappedHandleDeleteFolder}
+          onRenameFile={wrappedHandleRenameFile}
+          onRenameFolder={wrappedHandleRenameFolder}
         />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">

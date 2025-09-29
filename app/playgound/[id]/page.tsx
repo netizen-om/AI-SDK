@@ -27,6 +27,7 @@ import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { TemplateFile } from "@/modules/playgound/lib/path-to-json";
 import WebContainerPreview from "@/modules/webcontainers/components/webcontainer-preview";
+import { useWebContainer } from "@/modules/webcontainers/hooks/useWebContainer";
 import { Bot, FileText, icons, Save, SaveAll, Settings, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -52,7 +53,7 @@ const MainPlaygoundPage = () => {
   } = useFileExplorer();
 
   const { serverUrl, isLoading:containerLoading, error:containerError, instance, writeFileSync, destroy } =
-  //@ts-ignore
+      //@ts-ignore
     useWebContainer({ templateData });
 
   useEffect(() => {
@@ -228,6 +229,7 @@ const MainPlaygoundPage = () => {
                         <ResizableHandle />
                         <ResizablePanel defaultSize={50}>
                           <WebContainerPreview
+                            //@ts-ignore
                             templateData={templateData}
                             instance={instance}
                             writeFileSync={writeFileSync}

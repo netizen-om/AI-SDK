@@ -26,7 +26,7 @@ import { TemplateFileTree } from "@/modules/playgound/components/playgound-explo
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { TemplateFile } from "@/modules/playgound/lib/path-to-json";
-import { useWebContainer } from "@/modules/webcontainers/hooks/useWebcontainer";
+import WebContainerPreview from "@/modules/webcontainers/components/webcontainer-preview";
 import { Bot, FileText, icons, Save, SaveAll, Settings, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -52,6 +52,7 @@ const MainPlaygoundPage = () => {
   } = useFileExplorer();
 
   const { serverUrl, isLoading:containerLoading, error:containerError, instance, writeFileSync, destroy } =
+  //@ts-ignore
     useWebContainer({ templateData });
 
   useEffect(() => {

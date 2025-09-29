@@ -7,7 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,6 +26,7 @@ import { TemplateFileTree } from "@/modules/playgound/components/playgound-explo
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { TemplateFile } from "@/modules/playgound/lib/path-to-json";
+import { useWebContainer } from "@/modules/webcontainers/hooks/useWebcontainer";
 import { Bot, FileText, icons, Save, SaveAll, Settings, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -45,6 +50,9 @@ const MainPlaygoundPage = () => {
     closeFile,
     openFiles,
   } = useFileExplorer();
+
+  const { serverUrl, isLoading:containerLoading, error:containerError, instance, writeFileSync, destroy } =
+    useWebContainer({ templateData });
 
   useEffect(() => {
     setPlaygroundId(id);
@@ -202,18 +210,36 @@ const MainPlaygoundPage = () => {
                 </div>
 
                 <div className="flex-1">
-                  <ResizablePanelGroup direction="horizontal" className="h-full">
-                      <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
-                          <PlaygoundEditor 
-                            activeFile={activeFile}
-                            content={activeFile?.content || ""}
-                            onContentChange={() => {}}
-                            
+                  <ResizablePanelGroup
+                    direction="horizontal"
+                    className="h-full"
+                  >
+                    <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
+                      <PlaygoundEditor
+                        activeFile={activeFile}
+                        content={activeFile?.content || ""}
+                        onContentChange={() => {}}
+                      />
+                    </ResizablePanel>
+
+                    {isPreviewVisible && (
+                      <>
+                        <ResizableHandle />
+                        <ResizablePanel defaultSize={50}>
+                          <WebContainerPreview
+                            templateData={templateData}
+                            instance={instance}
+                            writeFileSync={writeFileSync}
+                            isLoading={containerLoading}
+                            error={containerError}
+                            serverUrl={serverUrl!}
+                            forceResetup={false}
                           />
-                      </ResizablePanel>
+                        </ResizablePanel>
+                      </>
+                    )}
                   </ResizablePanelGroup>
                 </div>
-
               </div>
             ) : (
               <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-4">

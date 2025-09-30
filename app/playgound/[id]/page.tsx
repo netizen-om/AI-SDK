@@ -24,6 +24,7 @@ import {
 import LoadingStep from "@/modules/playgound/components/loader";
 import PlaygoundEditor from "@/modules/playgound/components/playgound-editor";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
+import ToggleAI from "@/modules/playgound/components/toggle-ai";
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { findFilePath } from "@/modules/playgound/lib/indes";
@@ -51,7 +52,7 @@ import { toast } from "sonner";
 const MainPlaygoundPage = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(true);
 
   const { playgroundData, templateData, isLoading, error, saveTemplateData } =
     usePlayground(id);
@@ -224,6 +225,7 @@ const MainPlaygoundPage = () => {
 
         // Use saveTemplateData to persist changes
         const newTemplateData = await saveTemplateData(updatedTemplateData);
+        //@ts-ignore
         setTemplateData(newTemplateData || updatedTemplateData);
 
         // Update open files
@@ -385,6 +387,7 @@ const MainPlaygoundPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
+                      //@ts-ignore
                       onClick={() => handleSave(activeFileId)}
                       disabled={!activeFile || !activeFile.hasUnsavedChanges}
                     >
@@ -408,9 +411,11 @@ const MainPlaygoundPage = () => {
                   <TooltipContent>Save All(Ctrl+Shift+S)</TooltipContent>
                 </Tooltip>
 
-                <Button variant={"default"} size={"icon"}>
-                  <Bot className="size-4" />
-                </Button>
+                <ToggleAI 
+                  isEnabled={true}
+                  onToggle={() => {}}
+                  suggestionLoading={false}
+                />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

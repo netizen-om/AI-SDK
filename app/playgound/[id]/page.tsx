@@ -26,6 +26,7 @@ import PlaygoundEditor from "@/modules/playgound/components/playgound-editor";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
+import { findFilePath } from "@/modules/playgound/lib/indes";
 import {
   TemplateFile,
   TemplateFolder,
@@ -44,7 +45,8 @@ import {
   X,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const MainPlaygoundPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -87,6 +89,8 @@ const MainPlaygoundPage = () => {
   useEffect(() => {
     setPlaygroundId(id);
   }, [id, setPlaygroundId]);
+
+  const lastSyncedContent = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (templateData && !openFiles.length) {
@@ -166,6 +170,127 @@ const MainPlaygoundPage = () => {
     openFile(file);
   };
 
+  const handleSave = useCallback(
+    async (fileId?: string) => {
+      const targetedFileId = fileId || activeFile;
+      if (!targetedFileId) return;
+
+      const fileToSave = openFiles.find((f) => f.id === targetedFileId);
+      if (!fileToSave) return;
+
+      const latestTemplateData = useFileExplorer.getState().templateData;
+      if (!latestTemplateData) return;
+
+      try {
+        const filePath = findFilePath(fileToSave, latestTemplateData);
+        if (!filePath) {
+          toast.error(
+            `Could not find path for file: ${fileToSave.filename}.${fileToSave.fileExtension}`
+          );
+          return;
+        }
+
+        const updatedTemplateData = JSON.parse(
+          JSON.stringify(latestTemplateData)
+        );
+
+        //@ts-ignore
+        const updateFileContent = (items: any[]) =>
+          //@ts-ignore
+          items.map((item) => {
+            if ("folderName" in item) {
+              return { ...item, items: updateFileContent(item.items) };
+            } else if (
+              item.filename === fileToSave.filename &&
+              item.fileExtension === fileToSave.fileExtension
+            ) {
+              return { ...item, content: fileToSave.content };
+            }
+            return item;
+          });
+
+        updatedTemplateData.items = updateFileContent(
+          updatedTemplateData.items
+        );
+
+        // Sync with WebContainer
+        if (writeFileSync) {
+          await writeFileSync(filePath, fileToSave.content);
+          lastSyncedContent.current.set(fileToSave.id, fileToSave.content);
+          if (instance && instance.fs) {
+            await instance.fs.writeFile(filePath, fileToSave.content);
+          }
+        }
+
+        // Use saveTemplateData to persist changes
+        const newTemplateData = await saveTemplateData(updatedTemplateData);
+        setTemplateData(newTemplateData || updatedTemplateData);
+
+        // Update open files
+        const updatedOpenFiles = openFiles.map((f) =>
+          f.id === targetedFileId
+            ? {
+                ...f,
+                content: fileToSave.content,
+                originalContent: fileToSave.content,
+                hasUnsavedChanges: false,
+              }
+            : f
+        );
+        setOpenFiles(updatedOpenFiles);
+
+        toast.success(
+          `Saved ${fileToSave.filename}.${fileToSave.fileExtension}`
+        );
+      } catch (error) {
+        console.error("Error saving file:", error);
+        toast.error(
+          `Failed to save ${fileToSave.filename}.${fileToSave.fileExtension}`
+        );
+        throw error;
+      }
+    },
+    [
+      activeFileId,
+      openFiles,
+      writeFileSync,
+      instance,
+      saveTemplateData,
+      setTemplateData,
+      setOpenFiles,
+    ]
+  );
+
+  const handleSaveAll = async () => {
+    const unsavedFiles = openFiles.filter((f) => f.hasUnsavedChanges);
+
+    if (unsavedFiles.length === 0) {
+      toast.info("No unsaved changes");
+      return;
+    }
+
+    try {
+      await Promise.all(unsavedFiles.map((f) => handleSave(f.id)));
+      toast.success(`Saved ${unsavedFiles.length} file(s)`);
+    } catch (error) {
+      toast.error("Failed to save some files");
+    }
+  };
+
+  // Add event to save file by click ctrl + s
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+
+        if(activeFileId) handleSave(activeFileId);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleSave]);
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">
@@ -208,6 +333,7 @@ const MainPlaygoundPage = () => {
   }
 
   // No template data
+  
   if (!templateData) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">
@@ -259,7 +385,7 @@ const MainPlaygoundPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {}}
+                      onClick={() => handleSave(activeFileId)}
                       disabled={!activeFile || !activeFile.hasUnsavedChanges}
                     >
                       <Save className="h-4 w-4" />
@@ -273,7 +399,7 @@ const MainPlaygoundPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {}}
+                      onClick={() => handleSaveAll()}
                       disabled={!hasUnSavedChanges}
                     >
                       <SaveAll className="h-4 w-4" /> All
@@ -369,7 +495,9 @@ const MainPlaygoundPage = () => {
                       <PlaygoundEditor
                         activeFile={activeFile}
                         content={activeFile?.content || ""}
-                        onContentChange={() => {}}
+                        onContentChange={(value) =>
+                          activeFileId && updateFileContent(activeFileId, value)
+                        }
                       />
                     </ResizablePanel>
 

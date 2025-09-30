@@ -20,14 +20,14 @@ interface FileExplorerState {
   activeFileId: string | null;
   editorContent: string;
 
-  //    Setter function
+  // Setter function
   setPlaygroundId: (id: string) => void;
   setTemplateData: (data: TemplateFolder | null) => void;
   setEditorContent: (content: string) => void;
   setOpenFiles: (files: OpenFile[]) => void;
   setActiveFileId: (fileId: string | null) => void;
 
-  //    Functions
+  // Functions
   openFile: (file: TemplateFile) => void;
   closeFile: (fileId: string) => void;
   closeAllFiles: () => void;

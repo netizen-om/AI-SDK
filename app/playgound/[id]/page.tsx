@@ -278,6 +278,7 @@ const MainPlaygoundPage = () => {
   };
 
   // Add event to save file by click ctrl + s
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "s") {
@@ -332,6 +333,7 @@ const MainPlaygoundPage = () => {
   }
 
   // No template data
+  
   if (!templateData) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">

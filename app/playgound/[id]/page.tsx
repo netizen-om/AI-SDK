@@ -22,9 +22,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import LoadingStep from "@/modules/playgound/components/loader";
-import PlaygoundEditor from "@/modules/playgound/components/playgound-editor";
+import PlaygroundEditor from "@/modules/playgound/components/playgound-editor";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import ToggleAI from "@/modules/playgound/components/toggle-ai";
+import { useAISuggestions } from "@/modules/playgound/hooks/useAIsuggestions";
 import { useFileExplorer } from "@/modules/playgound/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playgound/hooks/usePlayground";
 import { findFilePath } from "@/modules/playgound/lib/indes";
@@ -56,6 +57,8 @@ const MainPlaygoundPage = () => {
 
   const { playgroundData, templateData, isLoading, error, saveTemplateData } =
     usePlayground(id);
+
+  const aiSuggestions = useAISuggestions();
 
   const {
     activeFileId,
@@ -412,9 +415,9 @@ const MainPlaygoundPage = () => {
                 </Tooltip>
 
                 <ToggleAI 
-                  isEnabled={true}
-                  onToggle={() => {}}
-                  suggestionLoading={false}
+                  isEnabled={aiSuggestions.isEnabled}
+                  onToggle={aiSuggestions.toggleEnabled}
+                  suggestionLoading={aiSuggestions.isLoading}
                 />
 
                 <DropdownMenu>
@@ -497,11 +500,23 @@ const MainPlaygoundPage = () => {
                     className="h-full"
                   >
                     <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
-                      <PlaygoundEditor
+                      <PlaygroundEditor
                         activeFile={activeFile}
                         content={activeFile?.content || ""}
                         onContentChange={(value) =>
                           activeFileId && updateFileContent(activeFileId, value)
+                        }
+                        suggestion={aiSuggestions.suggestion}
+                        suggestionLoading={aiSuggestions.isLoading}
+                        suggestionPosition={aiSuggestions.position}
+                        onAcceptSuggestion={(editor, monaco) =>
+                          aiSuggestions.acceptSuggestion(editor, monaco)
+                        }
+                        onRejectSuggestion={(editor) =>
+                          aiSuggestions.rejectSuggestion(editor)
+                        }
+                        onTriggerSuggestion={(type, editor) =>
+                          aiSuggestions.fetchSuggestion(type, editor)
                         }
                       />
                     </ResizablePanel>

@@ -27,11 +27,12 @@ model User {
   accounts Account[]
   role     UserRole  @default(USER)
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  
-  myPlayground Playground[]
-  StaredPlayground     StarMark[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  myPlayground     Playground[]
+  StaredPlayground StarMark[]
+  ChatMessage      ChatMessage[]
 }
 
 model Account {
@@ -64,17 +65,17 @@ enum Templates {
 }
 
 model Playground {
-  id          String     @id @default(cuid()) @map("_id")
+  id          String    @id @default(cuid()) @map("_id")
   title       String
   description String?
-  template    Templates  @default(REACT)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  template    Templates @default(REACT)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   templateFiles TemplateFile[]
-  StarMark    StarMark[]
+  StarMark      StarMark[]
 }
 
 model StarMark {
@@ -89,7 +90,6 @@ model StarMark {
   @@unique([userId, playgroundId])
 }
 
-
 model TemplateFile {
   id           String     @id @default(cuid()) @map("_id")
   content      Json
@@ -97,4 +97,16 @@ model TemplateFile {
   updatedAt    DateTime   @updatedAt
   playgroundId String     @unique
   playground   Playground @relation(fields: [playgroundId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid()) @map("_id")
+  userId    String
+  role      String // "user" or "assitant"
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

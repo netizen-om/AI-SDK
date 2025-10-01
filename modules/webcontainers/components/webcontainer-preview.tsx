@@ -8,6 +8,14 @@ import { TemplateFolder } from "@/modules/playgound/lib/path-to-json";
 import { WebContainer } from "@webcontainer/api";
 import React from "react";
 import TerminalComponent from "./terminal";
+import dynamic from 'next/dynamic';
+const DynamicTerminal = dynamic(
+  () => import('./terminal'), 
+  { 
+    ssr: false, // This is the crucial part that fixes the error
+    loading: () => <div className="p-4">Loading Terminal...</div> // Optional loading state
+  }
+);
 
 interface WebContainerPreviewProps {
   templateData: TemplateFolder;
@@ -346,7 +354,7 @@ const WebContainerPreview = ({
 
           {/* Terminal */}
           <div className="flex-1 p-4">
-            <TerminalComponent
+            <DynamicTerminal
               ref={terminalRef}
               webContainerInstance={instance}
               theme="dark"
@@ -366,7 +374,7 @@ const WebContainerPreview = ({
           </div>
 
           <div className="h-64 border-t">
-            <TerminalComponent
+            <DynamicTerminal
               ref={terminalRef}
               webContainerInstance={instance}
               theme="dark"

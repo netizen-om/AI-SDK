@@ -22,7 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import LoadingStep from "@/modules/playgound/components/loader";
-import PlaygroundEditor from "@/modules/playgound/components/playgound-editor";
+import {PlaygroundEditor} from "@/modules/playgound/components/playgound-editor";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import ToggleAI from "@/modules/playgound/components/toggle-ai";
 import { useAISuggestions } from "@/modules/playgound/hooks/useAIsuggestions";
@@ -59,6 +59,8 @@ const MainPlaygoundPage = () => {
     usePlayground(id);
 
   const aiSuggestions = useAISuggestions();
+  // console.log("AI suggestions : ", aiSuggestions);
+  
 
   const {
     activeFileId,
@@ -508,6 +510,7 @@ const MainPlaygoundPage = () => {
                         }
                         suggestion={aiSuggestions.suggestion}
                         suggestionLoading={aiSuggestions.isLoading}
+                        //
                         suggestionPosition={aiSuggestions.position}
                         onAcceptSuggestion={(editor, monaco) =>
                           aiSuggestions.acceptSuggestion(editor, monaco)

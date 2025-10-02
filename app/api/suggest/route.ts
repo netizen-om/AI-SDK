@@ -1,39 +1,50 @@
-// app/api/suggest/route.ts
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// app/api/code-completion/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { Copilot, type CompletionRequestBody } from "monacopilot";
 
-// IMPORTANT: Use environment variables for your API key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const copilot = new Copilot(process.env.OPENROUTER_API_KEY!, {
+  // provider: 'huggingface', You don't need to set the provider if you are using a custom model.
+  model: {  
+    config: (apiKey, prompt) => ({
+      endpoint: "https://openrouter.ai/api/v1/chat/completions",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: {
+        model: "mistralai/mistral-7b-instruct:free", // A popular free model on OpenRouter
+        messages: [
+          { role: "user", content: prompt.user }, // The prompt from the editor
+        ],
+      },
+    }),
+    transformResponse: (response) => {
+      if (response.error) {
+        return {
+          completion: null,
+          error: response.error,
+        };
+      }
+
+      return {
+        completion: response.choices[0].message.content,
+      };
+    },
+  },
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const { content, languageId, cursor } = await req.json();
-
-    // 1. Create a clear prompt for the AI model
-    const prompt = `
-      You are an expert programmer. Provide an inline code suggestion for the following code snippet.
-      The user is editing a file in ${languageId}.
-      The current code is:
-      \`\`\`${languageId}
-      ${content}
-      \`\`\`
-      The user's cursor is at position ${cursor}.
-      Return only the code suggestion that should be inserted at the cursor. Do not add any explanation or markdown formatting.
-    `;
-
-    // 2. Call the AI model
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const suggestion = response.text();
-
-    // 3. Return the suggestion in the expected format
-    return NextResponse.json({ suggestion });
+    const body: CompletionRequestBody = await req.json();
+    const completion = await copilot.complete({ body });
+    console.log("Completions : ", completion);
     
+
+    return NextResponse.json(completion, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("ERROR in POST route:", error);
     return NextResponse.json(
-      { error: "Failed to generate suggestion." },
+      { error: "Failed to get completion." },
       { status: 500 }
     );
   }

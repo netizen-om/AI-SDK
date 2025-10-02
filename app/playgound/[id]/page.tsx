@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import LoadingStep from "@/modules/playgound/components/loader";
 import {PlaygroundEditor} from "@/modules/playgound/components/playgound-editor";
+import PlaygoundEditor2 from "@/modules/playgound/components/playgound-editor-2";
 import { TemplateFileTree } from "@/modules/playgound/components/playgound-explorer";
 import ToggleAI from "@/modules/playgound/components/toggle-ai";
 import { useAISuggestions } from "@/modules/playgound/hooks/useAIsuggestions";
@@ -502,7 +503,7 @@ const MainPlaygoundPage = () => {
                     className="h-full"
                   >
                     <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
-                      <PlaygroundEditor
+                      {/* <PlaygroundEditor
                         activeFile={activeFile}
                         content={activeFile?.content || ""}
                         onContentChange={(value) =>
@@ -520,6 +521,13 @@ const MainPlaygoundPage = () => {
                         }
                         onTriggerSuggestion={(type, editor) =>
                           aiSuggestions.fetchSuggestion(type, editor)
+                        }
+                      /> */}
+                      <PlaygoundEditor2 
+                        activeFile={activeFile}
+                        content={activeFile?.content || ""}
+                        onContentChange={(value) =>
+                          activeFileId && updateFileContent(activeFileId, value)
                         }
                       />
                     </ResizablePanel>

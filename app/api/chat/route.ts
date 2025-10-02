@@ -48,6 +48,8 @@ export async function POST(req: NextRequest) {
 
     const AIresponse = await generateAIResponse(messages);
 
+    
+
     return NextResponse.json({
       response: AIresponse,
       timestamp: new Date().toISOString(),

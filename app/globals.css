@@ -43,6 +43,56 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+.copilot-ghost-text {
+  color: #555 !important;
+  opacity: 0.7 !important;
+}
+
+/* Monaco Editor Inline Suggestions Styling */
+.monaco-editor .ghost-text {
+  color: #6B7280 !important;
+  opacity: 0.8 !important;
+  font-style: italic !important;
+}
+
+.monaco-editor .inline-suggestion {
+  color: #9CA3AF !important;
+  opacity: 0.9 !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-radius: 2px !important;
+  padding: 0 2px !important;
+}
+
+.monaco-editor .inline-suggestion-accepted {
+  color: #10B981 !important;
+  opacity: 1 !important;
+}
+
+/* Inline suggestion widget styling */
+.monaco-editor .inline-suggestion-widget {
+  background: rgba(17, 24, 39, 0.95) !important;
+  border: 1px solid #374151 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.monaco-editor .inline-suggestion-widget .suggestion-text {
+  color: #E5E7EB !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+}
+
+.monaco-editor .inline-suggestion-widget .suggestion-accept {
+  background: #3B82F6 !important;
+  color: white !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+.monaco-editor .inline-suggestion-widget .suggestion-accept:hover {
+  background: #2563EB !important;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

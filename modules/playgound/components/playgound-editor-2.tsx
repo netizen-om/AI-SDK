@@ -36,13 +36,8 @@ const PlaygoundEditor2 = ({
     editorRef.current = editor;
     configureMonaco(monaco);
 
-    // Get the current language (for future use if needed)
-    // const currentLanguage = activeFile 
-    //   ? getEditorLanguage(activeFile.fileExtension || "")
-    //   : "javascript";
-
     // Register inline completion provider for multiple languages
-    const supportedLanguages = ["javascript", "typescript", "python", "html", "css", "json"];
+    const supportedLanguages = ["javascript", "typescript", "html", "css", "json"];
     
     supportedLanguages.forEach(language => {
         const disposable = monaco.languages.registerInlineCompletionsProvider(

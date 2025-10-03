@@ -280,7 +280,7 @@ export const defaultEditorOptions = {
   padding: { top: 16, bottom: 16 },
   
   // Line settings
-  lineNumbers: "on",
+  lineNumbers: "on" as const,
   lineHeight: 20,
   renderLineHighlight: "all",
   renderWhitespace: "selection",

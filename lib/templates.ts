@@ -1,7 +1,7 @@
 // templatePaths.ts
 export const templatePaths = {
-    REACT: '/starter-templates/react-ts',
-    NEXTJS: '/starter-templates/nextjs-new',
+    REACT: '/starter-templates/react-vite',
+    NEXTJS: '/starter-templates/nextjs',
     EXPRESS: '/starter-templates/express-simple',
     VUE: '/starter-templates/vue',
     HONO: '/starter-templates/hono-nodejs-starter',

@@ -15,7 +15,7 @@ const Page = async () => {
         <AddRepo />
       </div>
 
-      <div className="mt-10 flex flex-col justify-center items-center w-full">
+      <div className="mt-10 items-center w-full">
         {playground && playground.length === 0 ? (
           <EmptyState />
         ) : (

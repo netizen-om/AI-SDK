@@ -36,6 +36,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Image from "next/image"
+import { ModeTheme } from "./toggle-theme"
 
 // Define the interface for a single playground item, icon is now a string
 interface PlaygroundData {
@@ -182,10 +183,11 @@ export function DashboardSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Settings">
-              <Link href="/settings">
+              {/* <Link href="/settings">
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
-              </Link>
+              </Link> */}
+              <ModeTheme />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

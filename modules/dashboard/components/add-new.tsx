@@ -59,7 +59,7 @@ const AddNewButton = () => {
 
         <div className="relative overflow-hidden">
           <Image
-            src={"/theme/add-new.svg"}
+            src={"/add-new.svg"}
             alt="Create new playground"
             width={150}
             height={150}

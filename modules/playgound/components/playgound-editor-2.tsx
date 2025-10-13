@@ -8,12 +8,13 @@ import {
 import { TemplateFile } from "../lib/path-to-json";
 import { Monaco } from "@monaco-editor/react";
 import MonacoEditor from "@monaco-editor/react";
-
+import { useTheme } from "next-themes";
 interface PlaygoundEditorProps {
   activeFile: TemplateFile | undefined;
   content: string;
   onContentChange: (value: string) => void;
 }
+
 
 const PlaygoundEditor2 = ({
   activeFile,
@@ -23,7 +24,8 @@ const PlaygoundEditor2 = ({
   const editorRef = useRef<any>(null);
   const disposablesRef = useRef<any[]>([]);
   let debounceTimer: NodeJS.Timeout;
-
+  
+  const { resolvedTheme  } = useTheme()
   // Cleanup disposables on unmount
   useEffect(() => {
     const disposables = disposablesRef.current;
@@ -34,7 +36,7 @@ const PlaygoundEditor2 = ({
 
   const handleEditorDidMount = (editor: any, monaco: Monaco) => {
     editorRef.current = editor;
-    configureMonaco(monaco);
+    configureMonaco(monaco, resolvedTheme || "dark");
 
     // Register inline completion provider for multiple languages
     const supportedLanguages = ["javascript", "typescript", "html", "css", "json"];

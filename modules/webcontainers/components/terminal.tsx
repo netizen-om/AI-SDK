@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Copy, Trash2, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface TerminalProps {
   webcontainerUrl?: string;
@@ -29,7 +30,6 @@ const
 TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({ 
   webcontainerUrl, 
   className,
-  theme = "dark",
   webContainerInstance
 }, ref) => {
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -47,6 +47,8 @@ TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
   const historyIndex = useRef<number>(-1);
   const currentProcess = useRef<any>(null);
   const shellProcess = useRef<any>(null);
+
+  const { theme } = useTheme()
 
   const terminalThemes = {
     dark: {

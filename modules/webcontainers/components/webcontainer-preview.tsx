@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { TemplateFolder } from "@/modules/playgound/lib/path-to-json";
 import { WebContainer } from "@webcontainer/api";
 import React from "react";
-import TerminalComponent from "./terminal";
 import dynamic from 'next/dynamic';
 const DynamicTerminal = dynamic(
   () => import('./terminal'), 
